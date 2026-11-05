@@ -37,12 +37,15 @@ def demo_briefing():
 
 
 @app.get("/briefing/google", response_model=BriefingResponse)
-def google_briefing(max_items: int = 10, include_crm: bool = True):
-    """Live briefing from the authorized Gmail + Calendar account (plus mock CRM)."""
+def google_briefing(max_items: int = 10, include_crm: bool = True, primary_only: bool = True):
+    """Live briefing from the authorized Gmail + Calendar account (plus mock CRM).
+
+    By default only the Primary inbox is read; pass primary_only=false to include the category tabs.
+    """
     from app.providers import google_workspace
 
     try:
-        items = google_workspace.fetch_work_items()
+        items = google_workspace.fetch_work_items(primary_only=primary_only)
     except google_workspace.GoogleNotConfigured as exc:
         raise HTTPException(status_code=503, detail=str(exc))
     if include_crm:

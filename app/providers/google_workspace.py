@@ -97,14 +97,16 @@ def gmail_message_to_work_item(msg: dict) -> WorkItem:
     headers = _headers(msg)
     labels = set(msg.get("labelIds", []))
     name, address = parseaddr(headers.get("from", ""))
-    is_noise = bool(labels & NOISE_CATEGORIES)
+    # Bulk mail (Gmail category tabs, or anything with an unsubscribe header) never needs a reply.
+    # Gmail often marks newsletters IMPORTANT, so bulk outranks IMPORTANT; only a star overrides it.
+    is_noise = bool(labels & NOISE_CATEGORIES) or "list-unsubscribe" in headers
 
     if "STARRED" in labels:
         importance = 5
-    elif "IMPORTANT" in labels:
-        importance = 4
     elif is_noise:
         importance = 1
+    elif "IMPORTANT" in labels:
+        importance = 4
     else:
         importance = 3
 
@@ -151,7 +153,12 @@ def calendar_event_to_work_item(event: dict, now: datetime | None = None) -> Wor
 
 # --- Fetching ---
 
-def fetch_work_items(max_emails: int = 25, hours_ahead: int = 24) -> list[WorkItem]:
+def gmail_list_labels(primary_only: bool = True) -> list[str]:
+    """Labels for the unread-inbox listing (Gmail ANDs them). Primary skips the Promotions/Social/Updates tabs."""
+    return ["INBOX", "UNREAD"] + (["CATEGORY_PERSONAL"] if primary_only else [])
+
+
+def fetch_work_items(max_emails: int = 25, hours_ahead: int = 24, primary_only: bool = True) -> list[WorkItem]:
     from googleapiclient.discovery import build
 
     creds = load_credentials()
@@ -160,10 +167,10 @@ def fetch_work_items(max_emails: int = 25, hours_ahead: int = 24) -> list[WorkIt
 
     items: list[WorkItem] = []
     # The metadata scope does not allow the `q` search parameter, so filter by label instead.
-    listing = gmail.users().messages().list(userId="me", labelIds=["INBOX", "UNREAD"], maxResults=max_emails).execute()
+    listing = gmail.users().messages().list(userId="me", labelIds=gmail_list_labels(primary_only), maxResults=max_emails).execute()
     for ref in listing.get("messages", []):
         msg = gmail.users().messages().get(
-            userId="me", id=ref["id"], format="metadata", metadataHeaders=["From", "Subject", "Date"]
+            userId="me", id=ref["id"], format="metadata", metadataHeaders=["From", "Subject", "Date", "List-Unsubscribe"]
         ).execute()
         items.append(gmail_message_to_work_item(msg))
 

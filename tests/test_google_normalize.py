@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from app.providers.google_workspace import calendar_event_to_work_item, gmail_message_to_work_item
+from app.providers.google_workspace import calendar_event_to_work_item, gmail_list_labels, gmail_message_to_work_item
 
 
 def test_gmail_unread_important_needs_reply():
@@ -50,3 +50,23 @@ def test_all_day_event_has_no_due_time():
     item = calendar_event_to_work_item(event)
     assert item.due_at is None
     assert item.urgency == 3
+
+
+def test_newsletter_in_primary_is_noise_even_if_important():
+    msg = {'id': 'm3', 'labelIds': ['INBOX', 'UNREAD', 'IMPORTANT', 'CATEGORY_PERSONAL'],
+           'payload': {'headers': [{'name': 'From', 'value': 'news@media.example'},
+                                   {'name': 'Subject', 'value': 'This week in AI'},
+                                   {'name': 'List-Unsubscribe', 'value': '<mailto:unsub@media.example>'}]}}
+    item = gmail_message_to_work_item(msg)
+    assert item.importance == 1
+    assert not item.requires_reply
+
+
+def test_starred_bulk_mail_stays_top_importance():
+    msg = {'id': 'm4', 'labelIds': ['INBOX', 'STARRED', 'CATEGORY_UPDATES'], 'payload': {'headers': []}}
+    assert gmail_message_to_work_item(msg).importance == 5
+
+
+def test_inbox_listing_defaults_to_primary_tab():
+    assert gmail_list_labels() == ['INBOX', 'UNREAD', 'CATEGORY_PERSONAL']
+    assert gmail_list_labels(primary_only=False) == ['INBOX', 'UNREAD']

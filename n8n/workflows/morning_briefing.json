@@ -39,7 +39,7 @@
     },
     {
       "parameters": {
-        "url": "http://api:8000/demo/briefing",
+        "url": "http://api:8000/briefing/google",
         "options": {
           "timeout": 60000
         }

@@ -15,7 +15,7 @@ They import inactive. Open each one in n8n, run it once by hand, then activate i
 
 Both end at a formatted `text` field. Add a delivery node (Slack, Gmail, Telegram, etc.) after it with your own credentials.
 
-The morning briefing calls `/demo/briefing` so it works straight away. After authorizing Google (see the main README), change the URL to `http://api:8000/briefing/google`.
+The morning briefing calls `/briefing/google`, so authorize Google first (see the main README); until then that call returns 503. To run it without Google, change the URL to `http://api:8000/demo/briefing`.
 
 ## Planned workflows
 
