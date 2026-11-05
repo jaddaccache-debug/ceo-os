@@ -1,0 +1,105 @@
+{
+  "id": "ceoMorningBrief01",
+  "name": "CEO OS - Morning briefing",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "6a1f0c1e-0001-4a00-9000-000000000004",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "6a1f0c1e-0001-4a00-9000-000000000001",
+      "name": "Weekdays 07:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://api:8000/demo/briefing",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "6a1f0c1e-0001-4a00-9000-000000000002",
+      "name": "Get briefing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const b = $input.first().json;\nconst lines = b.top_priorities.slice(0, 5).map(\n  (p, i) => `${i + 1}. [${p.priority.toUpperCase()}] ${p.title} - ${p.recommended_action}`\n);\nconst decisions = b.decisions_required.map(d => `- ${d.title}`);\nconst text = [\n  'Morning briefing',\n  '',\n  b.executive_summary,\n  '',\n  'Top priorities:',\n  ...lines,\n  '',\n  `Decisions required (${decisions.length}):`,\n  ...decisions,\n].join('\\n');\nreturn [{ json: { text, generated_at: b.generated_at } }];"
+      },
+      "id": "6a1f0c1e-0001-4a00-9000-000000000003",
+      "name": "Format message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Weekdays 07:00": {
+      "main": [
+        [
+          {
+            "node": "Get briefing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get briefing": {
+      "main": [
+        [
+          {
+            "node": "Format message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Get briefing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

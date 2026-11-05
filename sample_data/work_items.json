@@ -1,0 +1,57 @@
+[
+  {
+    "id": "email-001",
+    "source": "email",
+    "title": "Investor term sheet requires response",
+    "summary": "Counterparty requested confirmation on two commercial clauses before close of business.",
+    "sender_or_owner": "Investor",
+    "importance": 5,
+    "urgency": 5,
+    "requires_decision": true,
+    "requires_reply": true
+  },
+  {
+    "id": "calendar-001",
+    "source": "calendar",
+    "title": "Board review",
+    "summary": "Board review starts in three hours; operating KPI pack is not confirmed complete.",
+    "sender_or_owner": "CEO Office",
+    "importance": 5,
+    "urgency": 5,
+    "requires_decision": false,
+    "requires_reply": false
+  },
+  {
+    "id": "crm-001",
+    "source": "crm",
+    "title": "Strategic enterprise lead stalled",
+    "summary": "High-value opportunity has had no outbound follow-up for six days.",
+    "sender_or_owner": "Sales",
+    "importance": 5,
+    "urgency": 4,
+    "requires_decision": false,
+    "requires_reply": true
+  },
+  {
+    "id": "task-001",
+    "source": "task",
+    "title": "Approve recruitment shortlist",
+    "summary": "Three final candidates are waiting for CEO approval to proceed to offer stage.",
+    "sender_or_owner": "People",
+    "importance": 4,
+    "urgency": 4,
+    "requires_decision": true,
+    "requires_reply": false
+  },
+  {
+    "id": "news-001",
+    "source": "news",
+    "title": "Competitor announces regional expansion",
+    "summary": "Competitor launch may affect positioning in a priority market.",
+    "sender_or_owner": "Market Intelligence",
+    "importance": 3,
+    "urgency": 2,
+    "requires_decision": false,
+    "requires_reply": false
+  }
+]

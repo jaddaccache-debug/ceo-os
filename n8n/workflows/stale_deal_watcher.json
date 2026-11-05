@@ -1,0 +1,106 @@
+{
+  "id": "ceoStaleDeals0001",
+  "name": "CEO OS - Stalled deal watcher",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "6a1f0c1e-0002-4a00-9000-000000000004",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8-18 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "6a1f0c1e-0002-4a00-9000-000000000001",
+      "name": "Weekdays hourly 08-18",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/crm/follow-ups",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "6a1f0c1e-0002-4a00-9000-000000000002",
+      "name": "Propose follow-up drafts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// The endpoint is idempotent, so this runs hourly without creating duplicate drafts.\nconst pending = $input.all().map(i => i.json).filter(a => a.status === 'proposed');\nif (pending.length === 0) return [];\nconst text = [\n  `${pending.length} follow-up draft(s) awaiting CEO approval:`,\n  ...pending.map(a => `- ${a.description} (id: ${a.id})`),\n  '',\n  'Approve or reject via POST /actions/decide.',\n].join('\\n');\nreturn [{ json: { text, action_ids: pending.map(a => a.id) } }];"
+      },
+      "id": "6a1f0c1e-0002-4a00-9000-000000000003",
+      "name": "Summarize pending approvals",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Weekdays hourly 08-18": {
+      "main": [
+        [
+          {
+            "node": "Propose follow-up drafts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Propose follow-up drafts": {
+      "main": [
+        [
+          {
+            "node": "Summarize pending approvals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Propose follow-up drafts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

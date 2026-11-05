@@ -1,0 +1,62 @@
+[
+  {
+    "id": "opp-1001",
+    "account": "Northwind Logistics",
+    "contact_name": "Dana Whitfield",
+    "contact_email": "dana.whitfield@example.com",
+    "owner": "Sales",
+    "stage": "proposal",
+    "value": 420000,
+    "currency": "USD",
+    "last_activity_days_ago": 6,
+    "next_step": "Confirm security review dates"
+  },
+  {
+    "id": "opp-1002",
+    "account": "Helios Energy",
+    "contact_name": "Marco Ruiz",
+    "contact_email": "marco.ruiz@example.com",
+    "owner": "Sales",
+    "stage": "negotiation",
+    "value": 180000,
+    "currency": "USD",
+    "last_activity_days_ago": 9,
+    "next_step": null
+  },
+  {
+    "id": "opp-1003",
+    "account": "Blue Harbor Retail",
+    "contact_name": "Priya Nair",
+    "contact_email": "priya.nair@example.com",
+    "owner": "Sales",
+    "stage": "discovery",
+    "value": 35000,
+    "currency": "USD",
+    "last_activity_days_ago": 12,
+    "next_step": "Send case study"
+  },
+  {
+    "id": "opp-1004",
+    "account": "Atlas Manufacturing",
+    "contact_name": "Tom Becker",
+    "contact_email": "tom.becker@example.com",
+    "owner": "Sales",
+    "stage": "proposal",
+    "value": 260000,
+    "currency": "USD",
+    "last_activity_days_ago": 1,
+    "next_step": "Pricing call Thursday"
+  },
+  {
+    "id": "opp-1005",
+    "account": "Crescent Health",
+    "contact_name": "Lena Ortiz",
+    "contact_email": "lena.ortiz@example.com",
+    "owner": "Sales",
+    "stage": "closed_lost",
+    "value": 300000,
+    "currency": "USD",
+    "last_activity_days_ago": 20,
+    "next_step": null
+  }
+]
